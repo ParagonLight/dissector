@@ -19,9 +19,9 @@ Suppose we have ImageNet dataset and pretrained ResNet101 model and correspondin
 
 - `data/imagenet/models/resnet101`: root folder of ResNet101 model for imagenet dataset
 
-- `data/mnist/tensor_pub`: root folder for anatomy outputs
+- `data/imagenet/tensor_pub`: root folder for anatomy outputs
 
-- `data/mnist/weight` root folder for weights of weight models
+- `data/imagenet/weight` root folder for weights of weight models
 
 2. Put pretrained submodels model in `data/imagenet/models/resnet101`.
 
