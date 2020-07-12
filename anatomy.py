@@ -27,8 +27,8 @@ def visualize_weight(model, layer, root, dataset):
         n_cols = 8
     else:
         n_cols = 8
-    torchvision.utils.save_image(w,  '{}/{}_w.png'.format(root, layer),
-                             n_cols, normalize=True, range=(0,1), padding=4)
+    # torchvision.utils.save_image(w,  '{}/{}_w.png'.format(root, layer),
+    #                          n_cols, normalize=True, range=(0,1), padding=4)
     del w
 
 

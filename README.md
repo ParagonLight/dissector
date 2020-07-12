@@ -21,8 +21,6 @@ Suppose we have ImageNet dataset and pretrained ResNet101 model and correspondin
 
 - `data/imagenet/tensor_pub`: root folder for anatomy outputs
 
-- `data/imagenet/weight` root folder for weights of weight models
-
 2. Put pretrained submodels model in `data/imagenet/models/resnet101`.
 
 3. Create file `layer_info` to write layers' info, which the layers are used for anatomy.
