@@ -29,9 +29,13 @@ Suppose we have ImageNet dataset and pretrained ResNet101 model and correspondin
 
     For each row, write `layer_name,layer's output size`
 
-4. Run anatomy to produce results.
+4. Run anatomy to produce results from each submodel for all instances.
 
-    `python anatomy.py` or `sh imagenet.sh`
+    `python3 anatomy.py` or `sh imagenet.sh`
+
+5. Run merge_raw_layer_outputs.py to merge results from all layers.
+
+    `python3 merge_raw_layer_outputs.py`
 
 Use `--help` to see arguments.
 
