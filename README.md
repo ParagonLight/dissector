@@ -37,4 +37,14 @@ Suppose we have ImageNet dataset and pretrained ResNet101 model and correspondin
 
 Use `--help` to see arguments.
 
-## Download example folder for imagenet dataset 
+# Dissector Example for ResNet101 on ImageNet
+
+## 1. Download example folder for ImageNet dataset 
+
+    https://1drv.ms/u/s!Anr26WqGCJOLsSICmSnSpZgvJM0K
+
+`ILSVRC-val.lmdb` is ImageNet validation set.
+
+`imagenet_pub` is the root folder of the target. Pretrained submodels and layer info are all in `imagenet_pub/models/resnet101`
+
+`tensor_pub` is the root folder for outputs of dissector.
