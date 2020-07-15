@@ -17,7 +17,7 @@ Suppose we have ImageNet dataset and pretrained ResNet101 model and correspondin
 
 - `data/imagenet/data`: root folder of imagenet dataset files
 
-- `data/imagenet/models/resnet101`: root folder of ResNet101 model for imagenet dataset
+- `data/imagenet/models/resnet101`: root folder of ResNet101 sub models for imagenet dataset
 
 - `data/imagenet/tensor_pub`: root folder for anatomy outputs
 
@@ -41,7 +41,7 @@ Use `--help` to see arguments.
 
 ## 1. Download example folder for ImageNet dataset 
 
-    https://1drv.ms/u/s!Anr26WqGCJOLsSICmSnSpZgvJM0K
+https://1drv.ms/u/s!Anr26WqGCJOLsSICmSnSpZgvJM0K
 
 `ILSVRC-val.lmdb` is ImageNet validation set.
 
