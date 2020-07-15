@@ -7,16 +7,17 @@ import utils
 import math
 from sklearn.metrics import roc_auc_score
 
-def compute_sum(ds_root, layers, labels, type, type2, layer_weights, dataset):
+def compute_sum(dataset_size, ds_root, layers, dataset_label, type, type2, layer_weights, dataset):
     final = [] #torch.zeros((1,3))
     start = 0#30000
-    end = 50000#40000
+    end = dataset_size#40000
     softmax = None
     out_softmax = None
     sums = None
     softmax1 = None
     import math
     base = None
+    labels = int(dataset_label)
     sum_layer = []
     sum_layer_max = []
     sum_layer_max_value = []
@@ -24,7 +25,7 @@ def compute_sum(ds_root, layers, labels, type, type2, layer_weights, dataset):
     auc_y = []
     auc_score = []
     sum = 0
-    for index in range(50000):
+    for index in range(int(end)):
         result = results[index]
         #print(result)
         if(index%100 == 0):
@@ -170,6 +171,18 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Embedding extraction module')
     parser.add_argument('--dataset', default='imagenet',
                         help='dataset (default=imagenet)')
+    parser.add_argument('--dataset_size', default = '0',
+                        help='dataset_size (default= 0)')
+    parser.add_argument('--dataset_label',default = '0',
+                        help='dataset_label (default=0)')
+    parser.add_argument('--net',default = 'resnet101',
+                        help = 'DNN name (default=resnet101)')
+    parser.add_argument('--root', default = 'data',
+                        help='rootpath (default = data)')
+    parser.add_argument('--tensor_folder', default = 'tensor_pub',
+                            help='tensor_folder(default=tensor_pub)')
+    parser.add_argument('--layer_info', default = 'layer_info',
+                        help='layer-info (default = layer_info)')
     parser.add_argument('--type', default='softmax',
                         help='value type (default=softmax)')
     parser.add_argument('--gpu-id', default='1', type=str,
@@ -183,26 +196,33 @@ if __name__ == '__main__':
     args = parser.parse_args()
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu_id
 
+
     dataset = args.dataset
-    values = 10000
+    dataset_size = args.dataset_size
+    dataset_label = args.dataset_label
+    net = args.net
     type = args.type
     weightformula = args.weightformula
     para_alpha = args.para_alpha
     para_beta = args.para_beta
 
-    root = '/data/xujw/anatomy/'
+    root = args.root #'/data/xujw/anatomy/'
     type2 = 'clean'
-    ds_root = root + dataset + '/tensor_pub/'
+    ds_root = root + dataset + '/'+args.tensor_folder+'/'
     results = torch.load(ds_root + 'results.pt')
-    labels = 1000
-    values = 50000
-    layers = ['res_layer1', 'res_layer2', 'res_block8', 'res_block16', 'res_layer3', 'res_layer4', 'out']
+    #labels = 1000
+    #values = 50000
+    layers, cols = utils.get_layer_info(root,dataset,net,args.layer_info)
+    layers.append('out')
+    #layers = ['res_layer1', 'res_layer2', 'res_block8', 'res_block16', 'res_layer3', 'res_layer4', 'out']
     #layer_weights = [0.05,0.1,0.15,0.2,0.2,0.1,1]
     # folders = ['10000/','20000/', '30000/', '40000/', '50000/']
     #print(layer_weights)
-    weight_x = [1,2,3,4,5,6,7]
+    weight_x = range(1,len(layers)+1)
+    print(weight_x)
+
     layer_weights = output_weight(weight_x, weightformula, float(para_alpha), float(para_beta))
-    compute_sum(ds_root, layers, labels, type, type2, layer_weights, dataset)
+    compute_sum(dataset_size, ds_root, layers, dataset_label, type, type2, layer_weights, dataset)
     # show_results(ds_root, values, 'dists', 1)
     # show_results(ds_root, values, type, 1, type2, layers, layer_weights)
 

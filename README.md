@@ -2,26 +2,35 @@
 
 Understanding behaviors of convolutional neural networks on image classification
 
-# Requirements
+**This repo covers the implementation of the following ICSE 2020 paper:**
+
+"DISSECTOR: Input Validation for Deep Learning Applications by Crossing-layer Dissection
+" (DISSECTOR).
+# Installation
 
 - Install PyTorch ([pytorch.org](http://pytorch.org))
 - *Pretrained model and dataset
+- Install requirements
+
+    ```
+    pip install lmdb
+
+    pip install msgpack
+    ```
 
 # Dissector Example for ResNet101 on ImageNet
 
-## 1. Download example folder for ImageNet dataset 
+## 1. Fetch the example data folder for ImageNet dataset 
 
 https://1drv.ms/u/s!Anr26WqGCJOLsSICmSnSpZgvJM0K
 
 `ILSVRC-val.lmdb` is ImageNet validation set. You should change the dataset path in `utils.py` 
 
-    `imagenet_val_path = 'Your path'`
+    imagenet_val_path = YOURPATH
 
 `imagenet_pub` is the root folder of the target. Pretrained submodels and layer info are all in `imagenet_pub/models/resnet101`
 
 `tensor_pub` is the root folder for outputs of dissector.
-
-
 
 # How to use
 
@@ -55,11 +64,29 @@ Suppose we have ImageNet dataset and pretrained ResNet101 model and correspondin
 
 4. Run anatomy to produce results from each submodel for all instances.
 
-    `python3 anatomy.py` or `sh imagenet.sh`
-
+    ```
+    sh imagenet.sh
+    ```
 5. Run merge_raw_layer_outputs.py to merge results from all layers.
 
-    `python3 merge_raw_layer_outputs.py`
+    ```
+    sh profile.sh
+    ```
 
 Use `--help` to see arguments.
 
+
+# Citation
+
+If you find this repo useful for your research, please consider citing the paper
+
+```
+@inproceedings{Wang2019Dissector,
+  title={Dissector: Input Validation for Deep Learning Applications by Crossing-layer Dissection},
+  author={Huiyan Wang and Jingwei Xu and Chang Xu and Xiaoxing Ma and Jian Lu},
+  booktitle={The 42th International Conference on Software Engineering},
+  year={2020}
+}
+
+```
+For any questions, please contact Huiyan Wang (cocowhy1013@gmail.com) and Jingwei Xu (jingweix@nju.edu.cn).
