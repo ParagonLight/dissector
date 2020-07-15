@@ -92,14 +92,6 @@ If you find this repo useful for your research, please consider citing the paper
   booktitle={The 42th International Conference on Software Engineering},
   year={2020}
 }
-
-
-
-
-
 ```
-<<<<<<< HEAD
+
 For any questions, please contact Huiyan Wang (cocowhy1013@gmail.com) and Jingwei Xu (jingweix@nju.edu.cn).
-=======
-For any questions, please contact Huiyan Wang (cocowhy1013@gmail.com) and Jingwei Xu (jingweix@nju.edu.cn).
->>>>>>> 4ab171c8d6da1d8bfac80295dd5c5a755d41fea7
