@@ -72,7 +72,7 @@ Suppose we have ImageNet dataset and pretrained ResNet101 model and correspondin
     ```
     sh profile.sh
     ```
-
+    this is for running imagenet using Dissector-linear as an example
 Use `--help` to see arguments.
 
 
@@ -89,4 +89,8 @@ If you find this repo useful for your research, please consider citing the paper
 }
 
 ```
+<<<<<<< HEAD
 For any questions, please contact Huiyan Wang (cocowhy1013@gmail.com) and Jingwei Xu (jingweix@nju.edu.cn).
+=======
+For any questions, please contact Huiyan Wang (cocowhy1013@gmail.com) and Jingwei Xu (jingweix@nju.edu.cn).
+>>>>>>> 4ab171c8d6da1d8bfac80295dd5c5a755d41fea7
