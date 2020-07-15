@@ -28,7 +28,7 @@ def get_layer_info(root, dataset, model, name):
             layers.append(x[0])
             cols.append(int(x[1]))
 
-    print(layers)
+    print('sub models:', layers)
     return layers, cols
 
 def softmax(tensor, dim=0):
@@ -184,18 +184,18 @@ def load_mnist(root):
     return train_loader, test_loader
 
 
-def load_resnet_weight_models(root, layers, net):
+def load_resnet_sub_models(root, layers, net):
     models = []
     for index, layer in enumerate(layers):
-        print(layer)
+        print('load sub model:', layer)
         if net == 'resnet50':
-            model = load_resnet50_weight_model(root + '/' + layer + '.pth.tar', layer)
+            model = load_resnet50_sub_model(root + '/' + layer + '.pth.tar', layer)
         else:
-            model = load_resnet_weight_model(root + '/' + layer + '.pth.tar', layer)
+            model = load_resnet_sub_model(root + '/' + layer + '.pth.tar', layer)
         models.append(model)
     return models
 
-def load_resnet_weight_model(pretrained_model, layer):
+def load_resnet_sub_model(pretrained_model, layer):
     if layer == 'res_layer4':
         model = resnet_layer4.resnet101()
         model = torch.nn.DataParallel(model, [0]).cuda()
@@ -219,7 +219,7 @@ def load_resnet_weight_model(pretrained_model, layer):
     model.eval()
     return model
 
-def load_resnet50_weight_model(pretrained_model, layer):
+def load_resnet50_sub_model(pretrained_model, layer):
     if layer == 'res_layer4':
         model = resnet_layer4.resnet50()
         model = torch.nn.DataParallel(model, [0]).cuda()
