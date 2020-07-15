@@ -75,6 +75,11 @@ Suppose we have ImageNet dataset and pretrained ResNet101 model and correspondin
     this is for running imagenet using Dissector-linear as an example
 Use `--help` to see arguments.
 
+# What to expect
+    for our example Imagenet+resnet101, AUC results are as follows:
+    [Python 2.7.15, Pytorch 0.4.1]: Dissector-linear:0.8250, Dissector-log:0.8223, Dissector-exp:0.8562 (our ICSE'20 paper setting)
+    [Python 3.6.9, Pytorch 1.4.0]: Dissector-linear:0.8212, Dissector-log:0.8237, Dissector-exp:0.8547
+    
 
 # Citation
 
@@ -87,6 +92,10 @@ If you find this repo useful for your research, please consider citing the paper
   booktitle={The 42th International Conference on Software Engineering},
   year={2020}
 }
+
+
+
+
 
 ```
 <<<<<<< HEAD
