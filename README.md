@@ -26,7 +26,7 @@ https://1drv.ms/u/s!Anr26WqGCJOLsSICmSnSpZgvJM0K
 
 `ILSVRC-val.lmdb` is ImageNet validation set. You should change the dataset path in `utils.py` 
 
-    `imagenet_val_path = 'Your path'`
+    imagenet_val_path = YOURPATH
 
 `imagenet_pub` is the root folder of the target. Pretrained submodels and layer info are all in `imagenet_pub/models/resnet101`
 
@@ -75,3 +75,18 @@ Suppose we have ImageNet dataset and pretrained ResNet101 model and correspondin
 
 Use `--help` to see arguments.
 
+
+# Citation
+
+If you find this repo useful for your research, please consider citing the paper
+
+```
+@inproceedings{Wang2019Dissector,
+  title={Dissector: Input Validation for Deep Learning Applications by Crossing-layer Dissection},
+  author={Huiyan Wang and Jingwei Xu and Chang Xu and Xiaoxing Ma and Jian Lu},
+  booktitle={The 42th International Conference on Software Engineering},
+  year={2020}
+}
+
+```
+For any questions, please contact Huiyan Wang (cocowhy1013@gmail.com) and Jingwei Xu (jingweix@nju.edu.cn).
