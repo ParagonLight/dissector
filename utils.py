@@ -17,6 +17,11 @@ import numpy as np
 from PIL import Image
 from lmdbdataset import lmdbDataset
 import math
+
+imagenet_train_path = '/data/share/ImageNet/ILSVRC-train.lmdb'
+imagenet_val_path = '/data/share/ImageNet/ILSVRC-val.lmdb'
+
+
 def get_layer_info(root, dataset, model, name):
     model_root = get_model_root(root, dataset, model)
     layers = []
@@ -101,7 +106,7 @@ def save_cifar10_image(tensor, path):
 
 def load_imagenet_test(batch_size, workers):
     test_loader = torch.utils.data.DataLoader(
-        lmdbDataset('/data/share/ImageNet/ILSVRC-val.lmdb', False),
+        lmdbDataset(imagenet_val_path, False),
         batch_size=batch_size,
         num_workers=workers,
         pin_memory=True
@@ -111,14 +116,14 @@ def load_imagenet_test(batch_size, workers):
 
 def load_imagenet(batch_size, workers):
     train_loader = torch.utils.data.DataLoader(
-        lmdbDataset('/data/share/ImageNet/ILSVRC-train.lmdb', True),
+        lmdbDataset(imagenet_train_path, True),
         batch_size=batch_size,
         num_workers=workers,
         shuffle=True,
         pin_memory=True
     )
     test_loader = torch.utils.data.DataLoader(
-        lmdbDataset('/data/share/ImageNet/ILSVRC-val.lmdb', False),
+        lmdbDataset(imagenet_val_path, False),
         batch_size=batch_size,
         num_workers=workers,
         pin_memory=True
