@@ -6,6 +6,11 @@ Understanding behaviors of convolutional neural networks on image classification
 
 - Install PyTorch ([pytorch.org](http://pytorch.org))
 - *Pretrained model and dataset
+- Install requirements
+
+    `pip install lmdb`
+
+    `pip install msgpack`
 
 # Dissector Example for ResNet101 on ImageNet
 
@@ -20,8 +25,6 @@ https://1drv.ms/u/s!Anr26WqGCJOLsSICmSnSpZgvJM0K
 `imagenet_pub` is the root folder of the target. Pretrained submodels and layer info are all in `imagenet_pub/models/resnet101`
 
 `tensor_pub` is the root folder for outputs of dissector.
-
-
 
 # How to use
 
