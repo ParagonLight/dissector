@@ -7,19 +7,45 @@ Understanding behaviors of convolutional neural networks on image classification
 - Install PyTorch ([pytorch.org](http://pytorch.org))
 - *Pretrained model and dataset
 
+# Dissector Example for ResNet101 on ImageNet
+
+## 1. Download example folder for ImageNet dataset 
+
+https://1drv.ms/u/s!Anr26WqGCJOLsSICmSnSpZgvJM0K
+
+`ILSVRC-val.lmdb` is ImageNet validation set. You should change the dataset path in `utils.py` 
+
+    `imagenet_val_path = 'Your path'`
+
+`imagenet_pub` is the root folder of the target. Pretrained submodels and layer info are all in `imagenet_pub/models/resnet101`
+
+`tensor_pub` is the root folder for outputs of dissector.
+
+
+
 # How to use
 
 Suppose we have ImageNet dataset and pretrained ResNet101 model and corresponding pretrained 6 submodels.
 
-1. Create several folders in `data` folder.
+1. Create the root folder, such as `YOURPROOT`.
 
-- `data/imagenet`: root folder of imagenet dataset
+2. Create several folders in `YOURROOT` folder.
 
-- `data/imagenet/data`: root folder of imagenet dataset files
+- `YOURROOT/imagenet`: root folder of imagenet dataset
 
-- `data/imagenet/models/resnet101`: root folder of ResNet101 sub models for imagenet dataset
+- `YOURROOT/imagenet/data`: root folder of imagenet dataset files
 
-- `data/imagenet/tensor_pub`: root folder for anatomy outputs
+- `YOURROOT/imagenet/models/resnet101`: root folder of ResNet101 sub models for imagenet dataset
+
+- `YOURROOT/imagenet/tensor_pub`: root folder for anatomy outputs
+
+    - `YOURROOT/imagenet/tensor_pub/res_layer1`: folder for output of submodel res_layer1
+    - `YOURROOT/imagenet/tensor_pub/res_layer2`: folder for output of submodel res_layer2
+    - `YOURROOT/imagenet/tensor_pub/res_block8`: folder for output of submodel res_block8
+    - `YOURROOT/imagenet/tensor_pub/res_block16`: folder for output of submodel res_block16
+    - `YOURROOT/imagenet/tensor_pub/res_layer3`: folder for output of submodel res_layer3
+    - `YOURROOT/imagenet/tensor_pub/res_layer4`: folder for output of submodel res_layer4
+    - `YOURROOT/imagenet/tensor_pub/out`: folder for output of ResNet101
 
 2. Put pretrained submodels model in `data/imagenet/models/resnet101`.
 
@@ -37,14 +63,3 @@ Suppose we have ImageNet dataset and pretrained ResNet101 model and correspondin
 
 Use `--help` to see arguments.
 
-# Dissector Example for ResNet101 on ImageNet
-
-## 1. Download example folder for ImageNet dataset 
-
-https://1drv.ms/u/s!Anr26WqGCJOLsSICmSnSpZgvJM0K
-
-`ILSVRC-val.lmdb` is ImageNet validation set.
-
-`imagenet_pub` is the root folder of the target. Pretrained submodels and layer info are all in `imagenet_pub/models/resnet101`
-
-`tensor_pub` is the root folder for outputs of dissector.
