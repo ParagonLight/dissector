@@ -81,7 +81,7 @@ def compute_sum(ds_root, layers, labels, type, type2, layer_weights, dataset):
         # print(index)
         # print(result)
         our_conf_score = calculate_conf(validity_layer, layer_weights)
-        
+
         #base = sums[0][int(result[0])]
         #if type == 'dists':
 
@@ -139,7 +139,7 @@ def output_weight_linear(weight_x,  para_alpha, para_k):
             layer_weight[i] = weight_x[i]
     if para_alpha != 0: #y = x
         for i in range(len(weight_x)):
-            layer_weight[x] = para_alpha * weight_x[i] + 1
+            layer_weight[i] = para_alpha * weight_x[i] + 1
     return layer_weight
 
 def output_weight_log(weight_x, para_alpha, para_beta):
@@ -190,7 +190,7 @@ if __name__ == '__main__':
     para_alpha = args.para_alpha
     para_beta = args.para_beta
 
-    root = '/data/xjw/anatomy/'
+    root = '/data/xujw/anatomy/'
     type2 = 'clean'
     ds_root = root + dataset + '/tensor_pub/'
     results = torch.load(ds_root + 'results.pt')

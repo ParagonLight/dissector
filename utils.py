@@ -18,8 +18,8 @@ from PIL import Image
 from lmdbdataset import lmdbDataset
 import math
 
-imagenet_train_path = '/data/share/ImageNet/ILSVRC-train.lmdb'
-imagenet_val_path = '/data/share/ImageNet/ILSVRC-val.lmdb'
+imagenet_train_path = '/data/zhangcl2/ImageNet/ILSVRC-train.lmdb'
+imagenet_val_path = '/data/zhangcl2/ImageNet/ILSVRC-val.lmdb'
 
 
 def get_layer_info(root, dataset, model, name):
