@@ -1,4 +1,4 @@
-# dissector
+# Dissector
 
 Understanding behaviors of convolutional neural networks on image classification
 
@@ -6,6 +6,14 @@ Understanding behaviors of convolutional neural networks on image classification
 
 "DISSECTOR: Input Validation for Deep Learning Applications by Crossing-layer Dissection
 " (DISSECTOR).
+
+
+# Supported Models and Datasets
+  ResNet101 + ImageNet
+    
+ - ToDo:
+    models on CIFAR10, CIFAR100, and MNIST
+
 # Installation
 
 - Install PyTorch ([pytorch.org](http://pytorch.org))
