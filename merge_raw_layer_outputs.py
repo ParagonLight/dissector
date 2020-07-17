@@ -5,12 +5,11 @@ import numpy as np
 import torch
 import utils
 import math
+from progress.bar import Bar as Bar
 from sklearn.metrics import roc_auc_score
 
 def compute_sum(dataset_size, ds_root, layers, dataset_label, output_type, img_type, layer_weights, dataset):
     final = [] 
-    start = 0
-    end = dataset_size
     softmax = None
     out_softmax = None
     sums = None
@@ -23,15 +22,15 @@ def compute_sum(dataset_size, ds_root, layers, dataset_label, output_type, img_t
     auc_y = []
     auc_score = []
     sum = 0
-    for index in range(int(end)):
+    dataset_size
+    bar = Bar('Processing', max=dataset_size)
+    for index in range(dataset_size):
         result = results[index]
-        if(index%100 == 0):
-            print(index)
+
         sums = torch.zeros(1, labels)
         out_softmax = torch.load(ds_root+ 'out/' + str(index) + '_' + img_type + '_out_softmax.pt')
         out_softmax = utils.log_softmax_to_softmax(out_softmax.detach()).cpu()
-        if(index<10):
-            print(out_softmax.max().item())
+
 
         pred_ind = out_softmax.max(1, keepdim=True)[1].item()
         count = 0
@@ -77,12 +76,20 @@ def compute_sum(dataset_size, ds_root, layers, dataset_label, output_type, img_t
         v = [index, our_conf_score, out_softmax.max().item(), int(result[0]), int(result[1]), flag]
 
         final.append(v)
-        del result,  v
+        del result, v
         del sum_layer[:]
         del sum_layer_max[:]
         del sum_layer_max_value[:]
+
+        bar.suffix  = '({index}/{size}) | Total: {total:} | ETA: {eta:}'.format(
+                    index=index + 1,
+                    size=dataset_size,
+                    total=bar.elapsed_td,
+                    eta=bar.eta_td,
+                    )
+        bar.next()
+    bar.finish()
     torch.cuda.empty_cache()
-    utils.save_tensor(final, ds_root + 'out_' + output_type  + '_' + img_type + '_{}_{}.pt'.format('_'.join(layers), str(start)))
     print("AUC score being: ", roc_auc_score(auc_y,auc_score))
 
 
@@ -139,9 +146,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='dissector profile generation module')
     parser.add_argument('--dataset', default='imagenet',
                         help='dataset (default=imagenet)')
-    parser.add_argument('--dataset_size', default = '50000',
+    parser.add_argument('--dataset_size', default = '50000',type = int,
                         help='dataset_size (default= 50000)')
-    parser.add_argument('--dataset_label',default = '1000',
+    parser.add_argument('--dataset_label',default = '1000', type = int,
                         help='dataset_label (default=1000)')
     parser.add_argument('--net',default = 'resnet101',
                         help = 'DNN name (default=resnet101)')

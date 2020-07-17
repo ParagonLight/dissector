@@ -8,6 +8,7 @@ import os
 import argparse
 import numpy as np
 import utils
+from progress.bar import Bar as Bar
 
 def compute_distances_layer(index, x, model, layer, image_type, dataset):
     if layer == 'res_layer1': # do dimension reduction for such very large layer
@@ -37,9 +38,9 @@ def anatomy(model, sub_models, test_loader, root, dataset, tensor_folder, layers
 
     results = []
 
+    bar = Bar('Processing', max=len(test_loader))
     for data_origin, target_origin in test_loader:
         index += 1
-        print('Image index:', index)
         # Send the data and label to the device
         target_origin = target_origin.cuda(async=True)
         data = torch.autograd.Variable(data_origin).cuda()
@@ -56,6 +57,8 @@ def anatomy(model, sub_models, test_loader, root, dataset, tensor_folder, layers
         # extract log softmax for each sub model 
         compute_distances(index, layers, sub_models,
                                   embeddings, 'clean', tensor_root, dataset)
+
+        # extract log softmax of final output from target model                          
         out_values = embeddings['out']
         out_softmax = utils.softmax(out_values, dim=1)
         utils.save_tensor(out_softmax, tensor_root + '/out/' + str(index)
@@ -66,6 +69,14 @@ def anatomy(model, sub_models, test_loader, root, dataset, tensor_folder, layers
         results.append(line[1:])
         line = ','.join(line)
         torch.cuda.empty_cache()
+        bar.suffix  = '({index}/{size}) | Total: {total:} | ETA: {eta:}'.format(
+                    index=index,
+                    size=len(test_loader),
+                    total=bar.elapsed_td,
+                    eta=bar.eta_td,
+                    )
+        bar.next()
+    bar.finish()
 
     utils.save_tensor(results, tensor_root + '/results.pt')
 
