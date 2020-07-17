@@ -29,7 +29,7 @@ Understanding behaviors of convolutional neural networks on image classification
 
 # Dissector Example for ResNet101 on ImageNet
 
-## 1. Fetch the example data folder for ImageNet dataset 
+## Fetch the example data folder for ImageNet dataset 
 
 https://1drv.ms/u/s!Anr26WqGCJOLsSICmSnSpZgvJM0K
 
@@ -41,7 +41,7 @@ https://1drv.ms/u/s!Anr26WqGCJOLsSICmSnSpZgvJM0K
 
 `tensor_pub` is the root folder for outputs of dissector.
 
-# How to use
+ ## How to use
 
 Suppose we have ImageNet dataset and pretrained ResNet101 model and corresponding pretrained 6 submodels.
 
@@ -84,7 +84,7 @@ Suppose we have ImageNet dataset and pretrained ResNet101 model and correspondin
     this is for running imagenet using Dissector-linear as an example.
 Use `--help` to see arguments.
 
-# What to expect
+## What to expect
    for our example Imagenet+resnet101, AUC results are as follows:
     
 | Env |    Dissector-linear    |    Dissector-log    |    Dissector-exp   | 
