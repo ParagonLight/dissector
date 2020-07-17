@@ -7,16 +7,14 @@ import utils
 import math
 from sklearn.metrics import roc_auc_score
 
-def compute_sum(dataset_size, ds_root, layers, dataset_label, type, type2, layer_weights, dataset):
-    final = [] #torch.zeros((1,3))
-    start = 0#30000
-    end = dataset_size#40000
+def compute_sum(dataset_size, ds_root, layers, dataset_label, output_type, img_type, layer_weights, dataset):
+    final = [] 
+    start = 0
+    end = dataset_size
     softmax = None
     out_softmax = None
     sums = None
-    softmax1 = None
-    import math
-    base = None
+    
     labels = int(dataset_label)
     sum_layer = []
     sum_layer_max = []
@@ -27,11 +25,10 @@ def compute_sum(dataset_size, ds_root, layers, dataset_label, type, type2, layer
     sum = 0
     for index in range(int(end)):
         result = results[index]
-        #print(result)
         if(index%100 == 0):
             print(index)
         sums = torch.zeros(1, labels)
-        out_softmax = torch.load(ds_root+ 'out/' + str(index) + '_' + type2 + '_out_softmax.pt')
+        out_softmax = torch.load(ds_root+ 'out/' + str(index) + '_' + img_type + '_out_softmax.pt')
         out_softmax = utils.log_softmax_to_softmax(out_softmax.detach()).cpu()
         if(index<10):
             print(out_softmax.max().item())
@@ -40,16 +37,12 @@ def compute_sum(dataset_size, ds_root, layers, dataset_label, type, type2, layer
         count = 0
         our_conf = 0.0
         flag = 0
-        ss = 0
-        bonus = 1
         validity_layer = []
         our_conf_score = 0.0
         for layer in layers:
-            softmax = torch.load(ds_root+ layer + '/' + str(index) + '_' + type2 + '_'+layer+'_' + type + '.pt')
+            softmax = torch.load(ds_root+ layer + '/' + str(index) + '_' + img_type + '_'+layer+'_' + output_type + '.pt')
             softmax = utils.log_softmax_to_softmax(softmax.detach()).cpu()
 
-            softmax11 = softmax.view(-1,1)
-            layer_ind = softmax11.max(0, keepdim=True)[1].item()
             sums += softmax
             softmax = softmax.view(-1,1)
             layer_ind = softmax.max(0, keepdim=True)[1].item()
@@ -58,8 +51,6 @@ def compute_sum(dataset_size, ds_root, layers, dataset_label, type, type2, layer
             sum_layer.append(layer_value_pred_ind)
             sum_layer_max.append(layer_ind)
             sum_layer_max_value.append(layer_value_max)
-            # del softmax1
-            #our_conf += layer_value_pred_ind / layer_value_max
 
             count += 1
 
@@ -73,27 +64,8 @@ def compute_sum(dataset_size, ds_root, layers, dataset_label, type, type2, layer
             else:
                 score = 1.0 - max_softmax / (max_softmax + predict_softmax + 1e-100)
             validity_layer.append(score)
-        # sorted, index = torch.sort(sums, descending=True)
-        # print(result[2], sums)
-        # out_softmax = torch.load(ds_root+ folder + str(i) + '_' + type2 + '_out_softmax.pt')
-        # print(out_softmax.max())
-        # out_softmax = utils.log_softmax_to_softmax(out_softmax.detach()).cpu()
-        # print(out_softmax.max())
-        # print(index)
-        # print(result)
+
         our_conf_score = calculate_conf(validity_layer, layer_weights)
-
-        #base = sums[0][int(result[0])]
-        #if type == 'dists':
-
-        #    sums = torch.nn.functional.log_softmax(sums)
-        #    sums = math.e**sums
-        #    base = sums[0][int(result[0])]
-        #sorted, index = torch.sort(sums, descending=True)
-        #sum = sums.sum()
-        #sum = base / sum
-
-        #sum = our_conf_score
 
         flag = 1
         if result[2] == 'incorrect':
@@ -104,19 +76,14 @@ def compute_sum(dataset_size, ds_root, layers, dataset_label, type, type2, layer
 
         v = [index, our_conf_score, out_softmax.max().item(), int(result[0]), int(result[1]), flag]
 
-        #v.extend(sum_layer)
-        #v.extend(sum_layer_max)
-        #v.extend(sum_layer_max_value)
         final.append(v)
         del result,  v
         del sum_layer[:]
         del sum_layer_max[:]
         del sum_layer_max_value[:]
     torch.cuda.empty_cache()
-    utils.save_tensor(final, ds_root + 'out_' + type  + '_' + type2 + '_{}_{}.pt'.format('_'.join(layers), str(start)))
+    utils.save_tensor(final, ds_root + 'out_' + output_type  + '_' + img_type + '_{}_{}.pt'.format('_'.join(layers), str(start)))
     print("AUC score being: ", roc_auc_score(auc_y,auc_score))
-
-
 
 
 def calculate_conf(validity_layer, layer_weights):
@@ -162,19 +129,20 @@ def output_weight_exp(weight_x, para_alpha, para_beta):
         for i in range(len(weight_x)):
             layer_weight[i] = math.exp(para_beta * weight_x[i]) # y e^(bx)
     if para_alpha != 0: # y = a e * (bx) + 1
+        #for i in range(len(weight_x)):
         for i in range(len(weight_x)):
             layer_weight[i] = math.exp(para_beta * weight_x[i] ) * para_alpha + 1
     return layer_weight
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Embedding extraction module')
+    parser = argparse.ArgumentParser(description='dissector profile generation module')
     parser.add_argument('--dataset', default='imagenet',
                         help='dataset (default=imagenet)')
-    parser.add_argument('--dataset_size', default = '0',
-                        help='dataset_size (default= 0)')
-    parser.add_argument('--dataset_label',default = '0',
-                        help='dataset_label (default=0)')
+    parser.add_argument('--dataset_size', default = '50000',
+                        help='dataset_size (default= 50000)')
+    parser.add_argument('--dataset_label',default = '1000',
+                        help='dataset_label (default=1000)')
     parser.add_argument('--net',default = 'resnet101',
                         help = 'DNN name (default=resnet101)')
     parser.add_argument('--root', default = 'data',
@@ -183,7 +151,7 @@ if __name__ == '__main__':
                             help='tensor_folder(default=tensor_pub)')
     parser.add_argument('--layer_info', default = 'layer_info',
                         help='layer-info (default = layer_info)')
-    parser.add_argument('--type', default='softmax',
+    parser.add_argument('--output_type', default='softmax',
                         help='value type (default=softmax)')
     parser.add_argument('--gpu-id', default='1', type=str,
                         help='id(s) for CUDA_VISIBLE_DEVICES')
@@ -201,30 +169,19 @@ if __name__ == '__main__':
     dataset_size = args.dataset_size
     dataset_label = args.dataset_label
     net = args.net
-    type = args.type
+    output_type = args.output_type
     weightformula = args.weightformula
     para_alpha = args.para_alpha
     para_beta = args.para_beta
 
     root = args.root #'/data/xujw/anatomy/'
-    type2 = 'clean'
+    img_type = 'clean'
     ds_root = root + dataset + '/'+args.tensor_folder+'/'
     results = torch.load(ds_root + 'results.pt')
-    #labels = 1000
-    #values = 50000
     layers, cols = utils.get_layer_info(root,dataset,net,args.layer_info)
     layers.append('out')
-    #layers = ['res_layer1', 'res_layer2', 'res_block8', 'res_block16', 'res_layer3', 'res_layer4', 'out']
-    #layer_weights = [0.05,0.1,0.15,0.2,0.2,0.1,1]
-    # folders = ['10000/','20000/', '30000/', '40000/', '50000/']
-    #print(layer_weights)
-    weight_x = range(1,len(layers)+1)
+    weight_x = list(range(1,len(layers)+1))
     print(weight_x)
 
     layer_weights = output_weight(weight_x, weightformula, float(para_alpha), float(para_beta))
-    compute_sum(dataset_size, ds_root, layers, dataset_label, type, type2, layer_weights, dataset)
-    # show_results(ds_root, values, 'dists', 1)
-    # show_results(ds_root, values, type, 1, type2, layers, layer_weights)
-
-    # show_results(ds_root, values, type, 2, type2, layers, layer_weights)
-    # generate_raw_data(root, dataset, values, type)
+    compute_sum(dataset_size, ds_root, layers, dataset_label, output_type, img_type, layer_weights, dataset)
