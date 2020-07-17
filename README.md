@@ -85,7 +85,7 @@ Suppose we have ImageNet dataset and pretrained ResNet101 model and correspondin
 Use `--help` to see arguments.
 
 ## What to expect
-   for our example Imagenet+resnet101, AUC results are as follows:
+   For our example Imagenet+resnet101, AUC results are as follows:
     
 | Env |    Dissector-linear    |    Dissector-log    |    Dissector-exp   | 
 |:---------------:|:-----------------:|:-----------------:|:-----------------:|
