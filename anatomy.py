@@ -34,8 +34,8 @@ def compute_distances(img_index, layers, sub_models,
                           + '_' + image_type + '_' + layer + '_softmax.pt')
         del layer_softmax
 
-def anatomy(model, sub_models, test_loader, root, dataset, tensor_folder, layers):
-    dataset_root = root + '/' + dataset
+def anatomy(model, sub_models, test_loader, root, dataset, tensor_folder, net, layers):
+    dataset_root = root + '/' + dataset + '_' + net
     img_root = dataset_root + '/img'
     tensor_root = dataset_root + '/' + tensor_folder
     index = -1
@@ -63,7 +63,7 @@ def anatomy(model, sub_models, test_loader, root, dataset, tensor_folder, layers
                                   embeddings, 'clean', tensor_root, dataset)
 
         # extract log softmax of final output from target model
-        if dataset == 'mnist':
+        if dataset == 'mnist' and net == 'lenet5':
             out_values = embeddings['fc3']                         
         else: # models for cifar10, cifar100, imagenet
             out_values = embeddings['out']
@@ -127,7 +127,7 @@ def main():
         dataset, net), layers, net)
         test_loader = utils.load_imagenet_test(args.batch_size, args.workers)
         anatomy(model, sub_models, test_loader, root,
-            dataset, tensor_folder, layers)
+            dataset, tensor_folder, net, layers)
 
     else: # cifar10, cifar100, mnist
         device = torch.device("cuda" if (use_cuda and torch.cuda.is_available()) else "cpu")
@@ -140,17 +140,17 @@ def main():
                         utils.get_model_root(root, dataset, net), layers, cols, nclass)
         if dataset == 'mnist':
             train_loader, test_loader = utils.load_mnist(
-                utils.get_root(root, dataset, 'data'))
+                utils.get_root(root, dataset, 'data', net))
         elif dataset == 'cifar10':
             train_loader, test_loader = utils.load_cifar10(
-                utils.get_root(root, dataset, 'data'))
+                utils.get_root(root, dataset, 'data', net))
         elif dataset == 'cifar100':
             train_loader, test_loader = utils.load_cifar100(
-                utils.get_root(root, dataset, 'data'))
+                utils.get_root(root, dataset, 'data', net))
         else:#default mnist
             train_loader, test_loader = utils.load_mnist(
-                utils.get_root(root, dataset, 'data'))
-        anatomy(model, weight_models, test_loader, root, dataset, tensor_folder, layers)
+                utils.get_root(root, dataset, 'data', net))
+        anatomy(model, weight_models, test_loader, root, dataset, tensor_folder, net, layers)
 
 if __name__ == '__main__':
     main()
