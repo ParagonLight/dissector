@@ -11,10 +11,14 @@ import utils
 from progress.bar import Bar as Bar
 
 def compute_distances_layer(index, x, model, layer, image_type, dataset):
-    if layer == 'res_layer1': # do dimension reduction for such very large layer
-        x = model.module.avgpool(x)
-    x = x.flatten()
-    dists = model.module.fc(x)
+    if dataset.startswith('imagenet'):
+        if layer == 'res_layer1': # do dimension reduction for such very large layer
+            x = model.module.avgpool(x)
+        x = x.flatten()
+        dists = model.module.fc(x)
+    else:
+        x = x.flatten()
+        dists = model.fc(x)
     softmax = utils.softmax(dists)
     return softmax
 
@@ -58,8 +62,11 @@ def anatomy(model, sub_models, test_loader, root, dataset, tensor_folder, layers
         compute_distances(index, layers, sub_models,
                                   embeddings, 'clean', tensor_root, dataset)
 
-        # extract log softmax of final output from target model                          
-        out_values = embeddings['out']
+        # extract log softmax of final output from target model
+        if dataset == 'mnist':
+            out_values = embeddings['fc3']                         
+        else: # models for cifar10, cifar100, imagenet
+            out_values = embeddings['out']
         out_softmax = utils.softmax(out_values, dim=1)
         utils.save_tensor(out_softmax, tensor_root + '/out/' + str(index)
                           + '_clean_out_softmax.pt')
@@ -113,11 +120,37 @@ def main():
     print(root, dataset, net)
 
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu_id
-    model = utils.load_resnet_model(pretrained=True)
-    sub_models = utils.load_resnet_sub_models(utils.get_model_root(root,
-    dataset, net), layers, net)
-    test_loader = utils.load_imagenet_test(args.batch_size, args.workers)
-    anatomy(model, sub_models, test_loader, root,
-        dataset, tensor_folder, layers)
+
+    if dataset.startswith('imagenet'):
+        model = utils.load_resnet_model(pretrained=True)
+        sub_models = utils.load_resnet_sub_models(utils.get_model_root(root,
+        dataset, net), layers, net)
+        test_loader = utils.load_imagenet_test(args.batch_size, args.workers)
+        anatomy(model, sub_models, test_loader, root,
+            dataset, tensor_folder, layers)
+
+    else: # cifar10, cifar100, mnist
+        device = torch.device("cuda" if (use_cuda and torch.cuda.is_available()) else "cpu")
+        nclass= 10
+        if dataset == 'cifar100':
+            nclass = 100
+        model = utils.load_model(net, device,
+                                 utils.get_pretrained_model(root, dataset, net), dataset)
+        weight_models = utils.load_weight_models(net, device,
+                        utils.get_model_root(root, dataset, net), layers, cols, nclass)
+        if dataset == 'mnist':
+            train_loader, test_loader = utils.load_mnist(
+                utils.get_root(root, dataset, 'data'))
+        elif dataset == 'cifar10':
+            train_loader, test_loader = utils.load_cifar10(
+                utils.get_root(root, dataset, 'data'))
+        elif dataset == 'cifar100':
+            train_loader, test_loader = utils.load_cifar100(
+                utils.get_root(root, dataset, 'data'))
+        else:#default mnist
+            train_loader, test_loader = utils.load_mnist(
+                utils.get_root(root, dataset, 'data'))
+        anatomy(model, weight_models, test_loader, root, dataset, tensor_folder, layers)
+
 if __name__ == '__main__':
     main()
