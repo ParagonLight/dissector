@@ -24,8 +24,8 @@ from PIL import Image
 from lmdbdataset import lmdbDataset
 import math
 
-imagenet_train_path = '/data/zhangcl2/ImageNet/ILSVRC-train.lmdb'
-imagenet_val_path = '/data/zhangcl2/ImageNet/ILSVRC-val.lmdb'
+imagenet_train_path = '/data/share/ImageNet/ILSVRC-train.lmdb'
+imagenet_val_path = '/data/share/ImageNet/ILSVRC-val.lmdb'
 
 
 def get_layer_info(root, dataset, model, name):
@@ -364,7 +364,7 @@ def load_vgg_sub_model(pretrained_model, layer, col):
     checkpoint = torch.load(pretrained_model)
 
     # print(checkpoint['state_dict'].keys())
-    for key in checkpoint['state_dict'].keys():
+    for key in list(checkpoint['state_dict'].keys()):
         if key.startswith('features.module'):
             checkpoint['state_dict']['features.'+key[16:]] = checkpoint['state_dict'][key]
             del checkpoint['state_dict'][key]

@@ -23,7 +23,7 @@ class VGG_layer(nn.Module):
 
     def __init__(self, features, inC,  num_classes=1000, pool_size=56, init_weights=True):
         super(VGG_layer, self).__init__()
-        print(pool_size)
+        # print(pool_size)
         self.features = features
         self.avgpool = nn.AdaptiveAvgPool2d((pool_size, pool_size))
         self.fc = nn.Linear(inC, num_classes)
@@ -231,7 +231,7 @@ def vgg16_layer(pretrained=False, layer='D1', inC=8192, pool_size=56, **kwargs):
     """
     if pretrained:
         kwargs['init_weights'] = False
-    print(layer, pool_size, inC)
+    # print(layer, pool_size, inC)
     model = VGG_layer(make_layers(cfg[layer]), inC=inC, pool_size=pool_size, **kwargs)
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['vgg16']))
