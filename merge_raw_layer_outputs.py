@@ -9,11 +9,11 @@ from progress.bar import Bar as Bar
 from sklearn.metrics import roc_auc_score
 
 def compute_sum(dataset_size, ds_root, layers, dataset_label, output_type, img_type, layer_weights, dataset):
-    final = [] 
+    final = []
     softmax = None
     out_softmax = None
     sums = None
-    
+
     labels = int(dataset_label)
     sum_layer = []
     sum_layer_max = []
@@ -80,9 +80,9 @@ def compute_sum(dataset_size, ds_root, layers, dataset_label, output_type, img_t
         del sum_layer[:]
         del sum_layer_max[:]
         del sum_layer_max_value[:]
-
+        index = index + 1
         bar.suffix  = '({index}/{size}) | Total: {total:} | ETA: {eta:}'.format(
-                    index=index + 1,
+                    index=index,
                     size=dataset_size,
                     total=bar.elapsed_td,
                     eta=bar.eta_td,
@@ -183,7 +183,7 @@ if __name__ == '__main__':
 
     root = args.root #'/data/xujw/anatomy/'
     img_type = 'clean'
-    ds_root = root + dataset + '/'+args.tensor_folder+'/'
+    ds_root = root + dataset +'_' +net + '/'+args.tensor_folder+'/'
     results = torch.load(ds_root + 'results.pt')
     layers, cols = utils.get_layer_info(root,dataset,net,args.layer_info)
     layers.append('out')
