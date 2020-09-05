@@ -3,8 +3,14 @@ from __future__ import print_function
 import torch
 import torchvision
 from torchvision import datasets, transforms
+from models.pretrained.dnn import NN
 from models.pretrained.lenet5 import LeNet5
+from models.pretrained.lenet4 import LeNet4
 from models.pretrained.vgg16 import VGG16
+from models.pretrained import vgg
+from models.pretrained import densenet
+from models.pretrained import wrn
+from models.pretrained import resnext
 from models.embedding.fc import FC
 from models.embedding import resnet_layer4
 from models.embedding import resnet_layer3
@@ -48,7 +54,7 @@ def get_root(root, dataset, elem, suffix=None):
     if suffix == None:
         return '{}/{}/{}'.format(root, dataset, elem)
     else:
-        return '{}/{}/{}/{}'.format(root, dataset, elem, suffix)
+        return '{}/{}/{}/{}'.format(root, dataset + '_' + suffix, elem, suffix)
 
 def get_model_root(root, dataset, model):
     return get_root(root, dataset, 'models', model)
@@ -173,6 +179,40 @@ def load_fashionMNIST(root):
             batch_size=1, shuffle=False)
     return train_loader, test_loader
 
+def load_resnext_model(pretrained_model, cardinality, num_classes, depth, widen_factor, dropRate):
+    model = resnext.resnext(num_classes=num_classes, depth=depth, cardinality=cardinality, widen_factor=widen_factor, dropRate=dropRate)#.cuda()
+    model = torch.nn.DataParallel(model, [0]).cuda()
+    checkpoint = torch.load(pretrained_model)
+    # print(checkpoint['state_dict'].keys())
+    model.load_state_dict(checkpoint['state_dict'])
+    # print(model.state_dict().keys())
+    model.eval()
+    return model
+
+
+def load_dense_model(pretrained_model, num_classes, depth, growthRate, compressionRate, dropRate):
+    model = densenet.densenet(num_classes=num_classes, depth=depth, growthRate=growthRate, compressionRate=compressionRate, dropRate=dropRate)#.cuda()
+    model = torch.nn.DataParallel(model, [0]).cuda()
+    checkpoint = torch.load(pretrained_model)
+    model.load_state_dict(checkpoint['state_dict'])
+
+    model.eval()
+    return model
+
+
+def load_wrn_model(pretrained_model, num_classes, depth, widen_factor, dropRate):
+    model = wrn.wrn(num_classes=num_classes, depth=depth, widen_factor=widen_factor, dropRate=dropRate)#.cuda()
+
+    model = torch.nn.DataParallel(model, [0]).cuda()
+    checkpoint = torch.load(pretrained_model)
+    model.load_state_dict(checkpoint['state_dict'])
+
+    # print(model.state_dict().keys())
+    model.eval()
+    return model
+
+
+
 def load_mnist(root):
     train_loader = torch.utils.data.DataLoader(
         datasets.MNIST(root, train=True, download=True,
@@ -242,6 +282,15 @@ def load_resnet50_sub_model(pretrained_model, layer):
     model.eval()
     return model
 
+def load_vgg_model(pretrained=True, net=None):
+    if net == 'vgg16':
+        model = vgg.vgg16(pretrained).cuda()
+    model = torch.nn.DataParallel(model, [0]).cuda()
+    # print(model.state_dict().keys())
+    model.eval()
+    return model
+
+
 def load_resnet50_model(pretrained=True):
     model = resnet.resnet50(pretrained)
     model = torch.nn.DataParallel(model, [0]).cuda()
@@ -277,6 +326,75 @@ def remove_module_in_state_dict(filepath):
                 # load params
     return new_state_dict
 
+def load_imagenet_sub_models(root, layers, net, cols):
+    models = []
+    for index, layer in enumerate(layers):
+        print(layer)
+        col = cols[index]
+        if net == 'resnet50':
+            model = load_resnet50_sub_model(root + '/' + layer + '.pth.tar', layer)
+        elif net == 'vgg16':
+            model = load_vgg_sub_model(root + '/' + layer + '.pth.tar', layer, col)
+        else:
+            model = load_resnet_sub_model(root + '/' + layer + '.pth.tar', layer)
+        models.append(model)
+    return models
+
+
+def load_resnet50_sub_model(pretrained_model, layer):
+    if layer == 'res_layer4':
+        model = resnet_layer4.resnet50()
+        model = torch.nn.DataParallel(model, [0]).cuda()
+    elif layer == 'res_layer3':
+        model = resnet_layer3.resnet50()
+        model = torch.nn.DataParallel(model, [0]).cuda()
+    elif layer == 'res_layer2':
+        model = resnet_layer2.resnet50()
+        model = torch.nn.DataParallel(model, [0]).cuda()
+    elif layer == 'res_layer1':
+        model = resnet_layer1.resnet50()
+        model = torch.nn.DataParallel(model, [0]).cuda()
+    checkpoint = torch.load(pretrained_model)
+    model.load_state_dict(checkpoint['state_dict'])
+    model.eval()
+    return model
+
+def load_vgg_sub_model(pretrained_model, layer, col):
+    model = vgg.vgg16_layer(pretrained=False, layer=layer, inC=col, pool_size=vgg_pool_size(layer))
+    checkpoint = torch.load(pretrained_model)
+
+    # print(checkpoint['state_dict'].keys())
+    for key in list(checkpoint['state_dict'].keys()):
+        if key.startswith('features.module'):
+            checkpoint['state_dict']['features.'+key[16:]] = checkpoint['state_dict'][key]
+            del checkpoint['state_dict'][key]
+    '''
+    model_dict = model.state_dict()
+    # remove the key in pretrained_dict that do not belong the model_dict
+    pretrained_dicted = {k: v for k, v in model_dict.items() if k in checkpoint['state_dict']}
+    print(pretrained_dicted.keys())
+    # update the model_dict
+    model_dict.update(pretrained_dicted)
+    '''
+    model.load_state_dict(checkpoint['state_dict'])
+    model = torch.nn.DataParallel(model, [0]).cuda()
+    # print(model.state_dict())
+    model.eval()
+    return model
+
+def vgg_pool_size(layer):
+    if layer == 'D1':
+        return 56
+    elif layer == 'D2':
+        return 28
+    elif layer == 'D3':
+        return 28
+    elif layer == 'D4':
+        return 14
+    elif layer == 'D5':
+        return 7
+    else:
+        return 7
 
 def load_weight_model(layer, device, pretrained_model, model_col, nclass):
     model = FC(model_col, nclass).to(device)
@@ -288,21 +406,39 @@ def load_weight_model(layer, device, pretrained_model, model_col, nclass):
     # Set the model in evaluation mode. In this case this is for the Dropout layers
     model.eval()
     return model
+
 def load_model(net, device, pretrained_model, dataset):
     if net == 'lenet5':
         model = LeNet5().to(device)
+    elif net == 'lenet4':
+        model = LeNet4().to(device)
+    elif net == 'dnn2':
+        model = NN().to(device)
     elif net == 'lenet5_weight':
         model = FC().to(device)
     elif net == 'vgg16' and dataset == 'cifar10':
         model = VGG16(10).to(device)
     elif net == 'vgg16' and dataset == 'cifar100':
         model = VGG16(100).to(device)
+    elif net == 'wrn' and dataset == 'cifar10':
+        model = load_wrn_model(pretrained_model, 10, 28, 10, 0.3)
+    elif net == 'dense' and dataset == 'cifar10':
+        model = load_dense_model(pretrained_model, 10, 100, 12, 2, 0)
+    elif net == 'dense' and dataset == 'cifar100':
+        model = load_dense_model(pretrained_model, 100, 100, 12, 2, 0)
+    elif net == 'resnext' and dataset == 'cifar10':
+        model = load_resnext_model(pretrained_model, 8, 10, 29, 4, 0)
+    elif net == 'resnext' and dataset == 'cifar100':
+        model = load_resnext_model(pretrained_model, 8, 100, 29, 4, 0)
     print(net)
 
         # Load the pretrained model
     if net == 'vgg16':
         #print(torch.load(pretrained_model, map_location='cpu')['state_dict'])
         model.load_state_dict(remove_module_in_state_dict(pretrained_model))
+    elif net == 'dense' or net == 'resnext' or net == 'wrn':
+        # model.load_state_dict(remove_module_in_state_dict(pretrained_model))
+        pass
     else:
         model.load_state_dict(torch.load(pretrained_model, map_location='cpu'))
 
