@@ -10,19 +10,27 @@ Understanding behaviors of convolutional neural networks on image classification
 
 # Supported Models and Datasets
   ResNet101 + ImageNet
+  
   ResNet50 + ImageNet
+  
   VGG16 + ImageNet
   
   ResNeXt + CIFAR-100
+  
   VGG16 + CIFAR-100
+  
   DenseNet + CIFAR-100
 
   WRN + CIFAR-10
+  
   VGG16 + CIFAR-10
+  
   DenseNet + CIFAR-10
 
   LeNet4 + MNIST
+  
   LeNet5 + MNIST
+  
   DNN2 + MNIST
   
  - ToDo:
