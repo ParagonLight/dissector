@@ -122,9 +122,17 @@ def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu_id
 
     if dataset.startswith('imagenet'):
-        model = utils.load_resnet_model(pretrained=True)
-        sub_models = utils.load_resnet_sub_models(utils.get_model_root(root,
-        dataset, net), layers, net)
+        if net == 'resnet50':
+            model = utils.load_resnet50_model(True)
+        elif net == 'vgg16':
+            model = utils.load_vgg_model(pretrained=True, net=net)
+        else:
+            model = utils.load_resnet_model(pretrained=True)
+
+        sub_models = utils.load_imagenet_sub_models(utils.get_model_root(root,
+        dataset, net), layers, net, cols)
+        # sub_models = utils.load_resnet_sub_models(utils.get_model_root(root,
+        # dataset, net), layers, net)
         test_loader = utils.load_imagenet_test(args.batch_size, args.workers)
         anatomy(model, sub_models, test_loader, root,
             dataset, tensor_folder, net, layers)

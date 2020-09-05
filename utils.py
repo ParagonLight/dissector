@@ -7,6 +7,7 @@ from models.pretrained.dnn import NN
 from models.pretrained.lenet5 import LeNet5
 from models.pretrained.lenet4 import LeNet4
 from models.pretrained.vgg16 import VGG16
+from models.pretrained import vgg
 from models.pretrained import densenet
 from models.pretrained import wrn
 from models.pretrained import resnext
@@ -23,8 +24,8 @@ from PIL import Image
 from lmdbdataset import lmdbDataset
 import math
 
-imagenet_train_path = '/data/share/ImageNet/ILSVRC-train.lmdb'
-imagenet_val_path = '/data/share/ImageNet/ILSVRC-val.lmdb'
+imagenet_train_path = '/data/zhangcl2/ImageNet/ILSVRC-train.lmdb'
+imagenet_val_path = '/data/zhangcl2/ImageNet/ILSVRC-val.lmdb'
 
 
 def get_layer_info(root, dataset, model, name):
@@ -281,6 +282,15 @@ def load_resnet50_sub_model(pretrained_model, layer):
     model.eval()
     return model
 
+def load_vgg_model(pretrained=True, net=None):
+    if net == 'vgg16':
+        model = vgg.vgg16(pretrained).cuda()
+    model = torch.nn.DataParallel(model, [0]).cuda()
+    # print(model.state_dict().keys())
+    model.eval()
+    return model
+
+
 def load_resnet50_model(pretrained=True):
     model = resnet.resnet50(pretrained)
     model = torch.nn.DataParallel(model, [0]).cuda()
@@ -316,6 +326,75 @@ def remove_module_in_state_dict(filepath):
                 # load params
     return new_state_dict
 
+def load_imagenet_sub_models(root, layers, net, cols):
+    models = []
+    for index, layer in enumerate(layers):
+        print(layer)
+        col = cols[index]
+        if net == 'resnet50':
+            model = load_resnet50_sub_model(root + '/' + layer + '.pth.tar', layer)
+        elif net == 'vgg16':
+            model = load_vgg_sub_model(root + '/' + layer + '.pth.tar', layer, col)
+        else:
+            model = load_resnet_sub_model(root + '/' + layer + '.pth.tar', layer)
+        models.append(model)
+    return models
+
+
+def load_resnet50_sub_model(pretrained_model, layer):
+    if layer == 'res_layer4':
+        model = resnet_layer4.resnet50()
+        model = torch.nn.DataParallel(model, [0]).cuda()
+    elif layer == 'res_layer3':
+        model = resnet_layer3.resnet50()
+        model = torch.nn.DataParallel(model, [0]).cuda()
+    elif layer == 'res_layer2':
+        model = resnet_layer2.resnet50()
+        model = torch.nn.DataParallel(model, [0]).cuda()
+    elif layer == 'res_layer1':
+        model = resnet_layer1.resnet50()
+        model = torch.nn.DataParallel(model, [0]).cuda()
+    checkpoint = torch.load(pretrained_model)
+    model.load_state_dict(checkpoint['state_dict'])
+    model.eval()
+    return model
+
+def load_vgg_sub_model(pretrained_model, layer, col):
+    model = vgg.vgg16_layer(pretrained=False, layer=layer, inC=col, pool_size=vgg_pool_size(layer))
+    checkpoint = torch.load(pretrained_model)
+
+    # print(checkpoint['state_dict'].keys())
+    for key in checkpoint['state_dict'].keys():
+        if key.startswith('features.module'):
+            checkpoint['state_dict']['features.'+key[16:]] = checkpoint['state_dict'][key]
+            del checkpoint['state_dict'][key]
+    '''
+    model_dict = model.state_dict()
+    # remove the key in pretrained_dict that do not belong the model_dict
+    pretrained_dicted = {k: v for k, v in model_dict.items() if k in checkpoint['state_dict']}
+    print(pretrained_dicted.keys())
+    # update the model_dict
+    model_dict.update(pretrained_dicted)
+    '''
+    model.load_state_dict(checkpoint['state_dict'])
+    model = torch.nn.DataParallel(model, [0]).cuda()
+    # print(model.state_dict())
+    model.eval()
+    return model
+
+def vgg_pool_size(layer):
+    if layer == 'D1':
+        return 56
+    elif layer == 'D2':
+        return 28
+    elif layer == 'D3':
+        return 28
+    elif layer == 'D4':
+        return 14
+    elif layer == 'D5':
+        return 7
+    else:
+        return 7
 
 def load_weight_model(layer, device, pretrained_model, model_col, nclass):
     model = FC(model_col, nclass).to(device)
