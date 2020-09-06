@@ -20,12 +20,12 @@ Understanding behaviors of convolutional neural networks on image classification
   * VGG-16
   * DenseNet-BC (L=100, k=12)
   
-  CIFAR-10  
+  CIFAR-10:  
   * WRN-28-10 (drop 0.3)
   * VGG-16
   * DenseNet-BC (L=100, k=12)
 
-  MNIST
+  MNIST:
   * LeNet4
   * LeNet5
   * DNN2
