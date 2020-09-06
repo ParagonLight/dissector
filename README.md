@@ -5,7 +5,7 @@ Understanding behaviors of convolutional neural networks on image classification
 **This repo covers the implementation of the following ICSE 2020 paper:**
 
 "DISSECTOR: Input Validation for Deep Learning Applications by Crossing-layer Dissection
-" (DISSECTOR).
+".
 
 
 # Supported Models and Datasets
@@ -33,8 +33,8 @@ Understanding behaviors of convolutional neural networks on image classification
   
   DNN2 + MNIST
   
- - ToDo:
-    Support for submodel training.
+
+ **ToDo: support for submodel training.
 
 # Installation
 
@@ -42,13 +42,14 @@ Understanding behaviors of convolutional neural networks on image classification
   ```
   pip install torch torchvision
   ```
-- *Pretrained model and dataset
 - Install requirements
 
     ```
     pip install lmdb msgpack progressbar pillow sklearn
     ```
-
+- Prepare pretrained model and dataset
+    
+    ImageNet validation dataset, all supported models and corresponding submodels could be found through this link: https://1drv.ms/u/s!Anr26WqGCJOLsSICmSnSpZgvJM0K
 # Dissector Example for ResNet101 on ImageNet
 
 ## Fetch the example data folder for ImageNet dataset 
@@ -87,7 +88,7 @@ Suppose we have ImageNet dataset and pretrained ResNet101 model and correspondin
     - `YOURROOT/imagenet/tensor_pub/res_layer4`: folder for output of submodel res_layer4.
     - `YOURROOT/imagenet/tensor_pub/out`: folder for output of ResNet101.
 
-2. Put pretrained submodels model in `data/imagenet/models/resnet101`.
+2. Put pretrained submodels model in folder `data/imagenet/models/resnet101`.
 
 3. Create file `layer_info` to write layers' info, which the layers are used for anatomy.
 
@@ -113,6 +114,8 @@ Use `--help` to see arguments.
 |:---------------:|:-----------------:|:-----------------:|:-----------------:|
 | **[Python 2.7.15, Pytorch 0.4.1] (our ICSE'20 paper setting)** | **0.8250** | **0.8223** | **0.8562** |
 | [Python 3.6.9, Pytorch 1.4.0] | 0.8212 | 0.8237 | 0.8547 |
+
+Note: AUC results may vary due to different versions of Pytorch and Python. According to our test on two different servers, the impact to effectiveness of Dissector is limited.
 
 # Citation
 
