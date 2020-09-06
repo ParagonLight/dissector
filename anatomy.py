@@ -42,11 +42,17 @@ def anatomy(model, sub_models, test_loader, root, dataset, tensor_folder, net, l
 
     results = []
 
+    python_version = utils.python_version() # check python version
+
     bar = Bar('Processing', max=len(test_loader))
     for data_origin, target_origin in test_loader:
         index += 1
         # Send the data and label to the device
-        target_origin = target_origin.cuda(async=True)
+        if python_version >= 3:
+            target_origin = target_origin.cuda(non_blocking=True) # non_blocking is used for python 3
+        else:
+            target_origin = target_origin.cuda(async=True) # async=True is used for python 2.7
+
         data = torch.autograd.Variable(data_origin).cuda()
         target = torch.autograd.Variable(target_origin).cuda()
 

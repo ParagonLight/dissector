@@ -23,10 +23,16 @@ import numpy as np
 from PIL import Image
 from lmdbdataset import lmdbDataset
 import math
+import sys
+imagenet_train_path = '/data/share/ImageNet/ILSVRC-train.lmdb'
+imagenet_val_path = '/data/share/ImageNet/ILSVRC-val.lmdb'
 
-imagenet_train_path = '/data/zhangcl2/ImageNet/ILSVRC-train.lmdb'
-imagenet_val_path = '/data/zhangcl2/ImageNet/ILSVRC-val.lmdb'
 
+def python_version():
+    python_major_version = int(sys.version[0:1])
+    print("Python version is: " + str(python_major_version))
+    return python_major_version
+        
 
 def get_layer_info(root, dataset, model, name):
     model_root = get_model_root(root, dataset, model)
