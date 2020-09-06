@@ -69,13 +69,13 @@ Suppose we have ImageNet dataset and pretrained ResNet101 model and correspondin
 
 2. Create several folders in `YOURROOT` folder.
 
-- `YOURROOT/imagenet`: root folder of imagenet dataset.
+  - `YOURROOT/imagenet`: root folder of imagenet dataset.
 
-- `YOURROOT/imagenet/data`: root folder of imagenet dataset files.
+  - `YOURROOT/imagenet/data`: root folder of imagenet dataset files.
 
-- `YOURROOT/imagenet/models/resnet101`: root folder of ResNet101 sub models for imagenet dataset.
+  - `YOURROOT/imagenet/models/resnet101`: root folder of ResNet101 sub models for imagenet dataset.
 
-- `YOURROOT/imagenet/tensor_pub`: root folder for anatomy outputs.
+  - `YOURROOT/imagenet/tensor_pub`: root folder for anatomy outputs.
 
     - `YOURROOT/imagenet/tensor_pub/res_layer1`: folder for output of submodel res_layer1.
     - `YOURROOT/imagenet/tensor_pub/res_layer2`: folder for output of submodel res_layer2.
@@ -85,18 +85,18 @@ Suppose we have ImageNet dataset and pretrained ResNet101 model and correspondin
     - `YOURROOT/imagenet/tensor_pub/res_layer4`: folder for output of submodel res_layer4.
     - `YOURROOT/imagenet/tensor_pub/out`: folder for output of ResNet101.
 
-2. Put pretrained submodels model in folder `data/imagenet/models/resnet101`.
+3. Put pretrained submodels model in folder `data/imagenet/models/resnet101`.
 
-3. Create file `layer_info` to write layers' info, which the layers are used for anatomy.
+4. Create file `layer_info` to write layers' info, which the layers are used for anatomy.
 
     For each row, write `layer_name,layer's output size`
 
-4. Run anatomy to produce results from each submodel for all instances.
+5. Run anatomy to produce results from each submodel for all instances.
 
     ```
     sh imagenet.sh
     ```
-5. Run merge_raw_layer_outputs.py to merge results from all layers.
+6. Run merge_raw_layer_outputs.py to merge results from all layers.
 
     ```
     sh profile.sh
