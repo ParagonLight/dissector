@@ -42,7 +42,7 @@ Understanding behaviors of convolutional neural networks on image classification
 - Install requirements
 
     ```
-    pip install lmdb msgpack progressbar pillow sklearn
+    pip install lmdb msgpack progress pillow sklearn
     ```
 - Prepare pretrained model and dataset
     
